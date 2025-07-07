@@ -93,19 +93,7 @@ def mutate_classify(sequence, variants):
 
     return pd.DataFrame(output)
 
-def main():
-    # To parse arguments
-    parser = argparse.ArgumentParser(description="SNP Effect Predictor for Protein-Coding Genes")
-    parser.add_argument('--fasta', required=True, help='Path to input FASTA file')
-    parser.add_argument('--variants', required=True, help='Path to SNP variants CSV file)')
-    parser.add_argument('--output', required=True, help='Path to output results CSV file')
-
-    args = parser.parse_args()
-
-    fasta_path = args.fasta
-    variants_path = args.variants
-    output_path = args.output
-
+def main(fasta_path, variants_path, output_path):
     sequence = read_fasta(fasta_path).upper()
     variants = pd.read_csv(variants_path)
     variants['reference_base'] = variants['reference_base'].str.upper()
@@ -124,5 +112,17 @@ def main():
     
 
 if __name__ == "__main__":
-    main()
+    # To parse arguments
+    parser = argparse.ArgumentParser(description="SNP Effect Predictor for Protein-Coding Genes")
+    parser.add_argument('--fasta', required=True, help='Path to input FASTA file')
+    parser.add_argument('--variants', required=True, help='Path to SNP variants CSV file)')
+    parser.add_argument('--output', required=True, help='Path to output results CSV file')
+
+    args = parser.parse_args()
+
+    fasta_path = args.fasta
+    variants_path = args.variants
+    output_path = args.output
+    
+    main(fasta_path, variants_path, output_path)
     
