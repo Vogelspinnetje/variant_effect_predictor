@@ -82,7 +82,7 @@ def mutate_classify(sequence, variants):
             
             # Checks 
             if mutated_aa_seq == original_aa_seq:
-                output["mutation_type"].append("Synomynous")
+                output["mutation_type"].append("Synonynous")
             elif len(mutated_aa_seq) < len (original_aa_seq) or output["mutated_aa"][-1] == "*":
                 output["mutation_type"].append("Nonsense")
             else:
