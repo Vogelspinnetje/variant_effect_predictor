@@ -9,7 +9,7 @@ the mutation is: symomynous, nonsense or missense.
 Access this script through command line using the following code:
 python variant_predictor.py --fasta gene.fasta --variants variants.csv --output results.csv
 
-- gene.fasta must contain only 1 sequence
+- gene.fasta can contain as many sequences as you would like
 - variant.csv must only contain: position,reference_base,alternative_base
 """
 
@@ -33,30 +33,19 @@ def read_fasta(file_path):
     """
     # Load in fasta file
     records = list(SeqIO.parse(file_path, "fasta"))
+    record_dict = {}
+    for record in records:
+        record_dict[str(record.id)] = str(record.seq)
     
-    # Checking if there are multiple sequences
-    if len(records) != 1:
-        raise ValueError("Multiple sequences detected. This tool supports single-gene FASTA files only.")
-    
-    return str(records[0].seq)
+    return record_dict
 
 
-def mutate_classify(sequence, variants):
+def mutate_classify(sequence, variants, output, id):
     # Getting the original amino acid sequence for comparison
     original_aa_seq = str(Seq(sequence).translate())
     
     # Creating a list for mutated_sequence so the data is adjustable
     mutated_sequence = list(sequence)
-    
-    # Initiating output
-    output = {"position" : [],
-              "ref_base": [],
-              "alt_base": [],
-              "original_codon": [],
-              "mutated_codon": [],
-              "original_aa": [],
-              "mutated_aa": [],
-              "mutation_type": []}
     
     # Loops through every row in the variants dataframe
     for row in variants.itertuples(index=False):
@@ -66,6 +55,7 @@ def mutate_classify(sequence, variants):
             mutated_sequence[int(row.position)-1] = row.alternative_base
             
             # Filling the output-dictionary
+            output["fasta_header"].append(id)
             output["position"].append(row.position)
             output["ref_base"].append(row.reference_base)
             output["alt_base"].append(row.alternative_base)
@@ -91,10 +81,10 @@ def mutate_classify(sequence, variants):
         # Reset mutation        
         mutated_sequence = list(sequence)
 
-    return pd.DataFrame(output)
+    return output
 
 def main(fasta_path, variants_path, output_path):
-    sequence = read_fasta(fasta_path).upper()
+    sequences = read_fasta(fasta_path)
     variants = pd.read_csv(variants_path)
     variants['reference_base'] = variants['reference_base'].str.upper()
     variants['alternative_base'] = variants['alternative_base'].str.upper()
@@ -104,11 +94,21 @@ def main(fasta_path, variants_path, output_path):
     if variants.isnull().values.any():
         raise ValueError("Your --variants file contains a missing value.")
 
-
-    output = mutate_classify(sequence, variants)
+    general_output = {"fasta_header": [],
+              "position" : [],
+              "ref_base": [],
+              "alt_base": [],
+              "original_codon": [],
+              "mutated_codon": [],
+              "original_aa": [],
+              "mutated_aa": [],
+              "mutation_type": []}
+    for id in sequences:
+        sequence = sequences[id].upper()
+        general_output = mutate_classify(sequence, variants, general_output, id)
     
     # Write to CSV
-    output.to_csv(output_path, index=False)
+    pd.DataFrame(general_output).to_csv(output_path, index=False)
     
 
 if __name__ == "__main__":
@@ -125,4 +125,3 @@ if __name__ == "__main__":
     output_path = args.output
     
     main(fasta_path, variants_path, output_path)
-    
