@@ -35,7 +35,7 @@ def read_fasta(file_path):
     records = list(SeqIO.parse(file_path, "fasta"))
     
     # Checking if there are multiple sequences
-    if records[0].id != records[-1].id:
+    if len(records) != 1:
         raise ValueError("Multiple sequences detected. This tool supports single-gene FASTA files only.")
     
     return str(records[0].seq)
