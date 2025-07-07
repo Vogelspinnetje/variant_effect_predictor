@@ -96,8 +96,8 @@ def mutate_classify(sequence, variants):
 def main():
     # To parse arguments
     parser = argparse.ArgumentParser(description="SNP Effect Predictor for Protein-Coding Genes")
-    parser.add_argument('--fasta', required=True, help='Path to input FASTA file (SEQUENCE MUST BE IN CAPITAL)')
-    parser.add_argument('--variants', required=True, help='Path to SNP variants CSV file (BASES MUST BE IN CAPITAL)')
+    parser.add_argument('--fasta', required=True, help='Path to input FASTA file')
+    parser.add_argument('--variants', required=True, help='Path to SNP variants CSV file)')
     parser.add_argument('--output', required=True, help='Path to output results CSV file')
 
     args = parser.parse_args()
@@ -106,8 +106,11 @@ def main():
     variants_path = args.variants
     output_path = args.output
 
-    sequence = read_fasta(fasta_path)
+    sequence = read_fasta(fasta_path).upper()
     variants = pd.read_csv(variants_path)
+    variants['reference_base'] = variants['reference_base'].str.upper()
+    variants['alternative_base'] = variants['alternative_base'].str.upper()
+
     
     # Checks for any missing values
     if variants.isnull().values.any():
