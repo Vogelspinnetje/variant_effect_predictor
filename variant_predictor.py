@@ -64,6 +64,9 @@ def main():
 
     sequence = read_fasta(fasta_path)
     variants = pd.read_csv(variants_path)
+    if variants.isnull().values.any():
+        raise ValueError("Your --variants file contains a missing value.")
+
 
     output = mutate_classify(sequence, variants)
     output.to_csv(output_path, index=False)
