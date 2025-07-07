@@ -1,3 +1,18 @@
+"""
+Author: Yesse Monkou
+Date: July 7th 2025
+
+This script mutates given SNPs onto a given sequence and checks the 
+effect that it has on that sequence. This program identifies wether 
+the mutation is: symomynous, nonsense or missense.
+
+Access this script through command line using the following code:
+python variant_predictor.py --fasta gene.fasta --variants variants.csv --output results.csv
+
+- gene.fasta must contain only 1 sequence
+- variant.csv must only contain: position,reference_base,alternative_base
+"""
+
 from Bio import SeqIO
 from Bio.Seq import Seq
 import pandas as pd
@@ -5,7 +20,21 @@ import argparse
 
 
 def read_fasta(file_path):
+    """Reads in fasta file and checks if there is only 1 sequence
+
+    Args:
+        file_path (str): Path of fasta file
+
+    Raises:
+        ValueError: There are multiple sequences inside the fasta file
+
+    Returns:
+        str: The sequence
+    """
+    # Load in fasta file
     records = list(SeqIO.parse("gene.fasta", "fasta"))
+    
+    # Checking if there are multiple sequences
     if records[0].id != records[-1].id:
         raise ValueError("Multiple sequences detected. This tool supports single-gene FASTA files only.")
     
@@ -13,8 +42,13 @@ def read_fasta(file_path):
 
 
 def mutate_classify(sequence, variants):
+    # Getting the original amino acid sequence for comparison
     original_aa_seq = str(Seq(sequence).translate())
+    
+    # Creating a list for mutated_sequence so the data is adjustable
     mutated_sequence = list(sequence)
+    
+    # Initiating output
     output = {"position" : [],
               "ref_base": [],
               "alt_base": [],
@@ -24,9 +58,14 @@ def mutate_classify(sequence, variants):
               "mutated_aa": [],
               "mutation_type": []}
     
+    # Loops through every row in the variants dataframe
     for row in variants.itertuples(index=False):
+        # Checks if the reference base from the variants dataframe is actually in the sequence
         if mutated_sequence[int(row.position)-1] == row.reference_base:
+            # Mutates base
             mutated_sequence[int(row.position)-1] = row.alternative_base
+            
+            # Filling the output-dictionary
             output["position"].append(row.position)
             output["ref_base"].append(row.reference_base)
             output["alt_base"].append(row.alternative_base)
@@ -37,20 +76,25 @@ def mutate_classify(sequence, variants):
             output["mutated_codon"].append("".join(mutated_sequence[codon_start:codon_end]))
             output["original_aa"].append(str(Seq(output["original_codon"][-1]).translate()))
             output["mutated_aa"].append(str(Seq(output["mutated_codon"][-1]).translate()))
+            
+            # For comparison to original aa sequence
             mutated_aa_seq = str(Seq("".join(mutated_sequence)).translate())
             
+            # Checks 
             if mutated_aa_seq == original_aa_seq:
                 output["mutation_type"].append("Synomynous")
             elif len(mutated_aa_seq) < len (original_aa_seq) or output["mutated_aa"][-1] == "*":
                 output["mutation_type"].append("Nonsense")
             else:
                 output["mutation_type"].append("Missense")
-                
+        
+        # Reset mutation        
         mutated_sequence = list(sequence)
 
     return pd.DataFrame(output)
 
 def main():
+    # To parse arguments
     parser = argparse.ArgumentParser(description="SNP Effect Predictor for Protein-Coding Genes")
     parser.add_argument('--fasta', required=True, help='Path to input FASTA file (SEQUENCE MUST BE IN CAPITAL)')
     parser.add_argument('--variants', required=True, help='Path to SNP variants CSV file (BASES MUST BE IN CAPITAL)')
@@ -64,11 +108,15 @@ def main():
 
     sequence = read_fasta(fasta_path)
     variants = pd.read_csv(variants_path)
+    
+    # Checks for any missing values
     if variants.isnull().values.any():
         raise ValueError("Your --variants file contains a missing value.")
 
 
     output = mutate_classify(sequence, variants)
+    
+    # Write to CSV
     output.to_csv(output_path, index=False)
     
 
