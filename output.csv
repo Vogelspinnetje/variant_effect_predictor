@@ -1,0 +1,4 @@
+position,ref_base,alt_base,original_codon,mutated_codon,original_aa,mutated_aa,mutation_type
+4,G,A,GAG,AAG,E,K,Missense
+15,G,A,GTG,GTA,V,V,Synomynous
+30,G,A,TGG,TGA,W,*,Nonsense
