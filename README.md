@@ -57,4 +57,7 @@ Your program should:
   
       `python variant_predictor.py --fasta gene.fasta --variants variants.csv --output results.csv`
   
-    \> Clean, readable code with comments
+- Clean, readable code with comments
+
+---
+**For the actual README, read the first lines of variant_predict.py**
