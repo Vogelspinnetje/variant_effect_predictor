@@ -48,8 +48,13 @@ Your program should:
 - Python script: variant_predictor.py
 - Output file with results
 - README.md explaining:
+  
     \> What the program does
+  
     \> How to run it
+  
     \> Example command:
+  
       `python variant_predictor.py --fasta gene.fasta --variants variants.csv --output results.csv`
+  
     \> Clean, readable code with comments
