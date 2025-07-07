@@ -1,4 +1,12 @@
-position,ref_base,alt_base,original_codon,mutated_codon,original_aa,mutated_aa,mutation_type
-4,G,A,GAG,AAG,E,K,Missense
-15,G,A,GTG,GTA,V,V,Synonynous
-30,G,A,TGG,TGA,W,*,Nonsense
+fasta_header,position,ref_base,alt_base,original_codon,mutated_codon,original_aa,mutated_aa,mutation_type
+EXAMPLE_GENE_1,4,G,A,GAG,AAG,E,K,Missense
+EXAMPLE_GENE_1,7,G,C,GAG,CAG,E,Q,Missense
+EXAMPLE_GENE_1,15,G,A,GTG,GTA,V,V,Synonynous
+EXAMPLE_GENE_1,30,G,A,TGG,TGA,W,*,Nonsense
+EXAMPLE_GENE_2,4,G,A,GCA,ACA,A,T,Missense
+EXAMPLE_GENE_2,5,C,T,GCA,GTA,A,V,Missense
+EXAMPLE_GENE_2,7,G,C,GCA,CCA,A,P,Missense
+EXAMPLE_GENE_2,15,G,A,CAG,CAA,Q,Q,Synonynous
+EXAMPLE_GENE_2,30,G,A,CAG,CAA,Q,Q,Synonynous
+EXAMPLE_GENE_3,5,C,T,ACT,ATT,T,I,Missense
+EXAMPLE_GENE_3,19,T,C,TCG,CCG,S,P,Missense
