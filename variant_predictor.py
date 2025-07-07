@@ -32,7 +32,7 @@ def read_fasta(file_path):
         str: The sequence
     """
     # Load in fasta file
-    records = list(SeqIO.parse("gene.fasta", "fasta"))
+    records = list(SeqIO.parse(file_path, "fasta"))
     
     # Checking if there are multiple sequences
     if records[0].id != records[-1].id:
